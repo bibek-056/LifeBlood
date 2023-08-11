@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from '../config.js';
 
 const Register = () => {
 
@@ -11,7 +12,7 @@ const Register = () => {
         bloodGroup: "",
         contactNo: "",
         share: true,
-        avavialibity: true
+        avaiability: true
     })
 
     const handleChange = (e) => {
@@ -19,10 +20,39 @@ const Register = () => {
         setDonorData({ ...donorData, [name]: value });
     };
 
-    const handleSubmit = (e, data) => {
-        e.preventDefault();
-        console.log(data);
+    const handleSubmit = async (e, data) => {
+    e.preventDefault();
+        console.log(data)
+    const requestData = {
+        user_name: data.userName,
+        password: data.password,
+        location: data.location,
+        bloodgroup: data.bloodGroup,
+        phone: data.contactNo,
+        share: data.share,
+        avaiability: data.avaiability
+    };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (response.ok) {
+            const newUser = await response.json();
+            console.log('New user created:', newUser);
+        } else {
+            console.error('Failed to create user:', response.status);
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
+};
+
 
     return (
         <div className="flex items-center">
@@ -87,13 +117,13 @@ const Register = () => {
                 <input
                     type="checkbox"
                     name="share"
-                    onChange={handleChange} />
+                />
                 <label className="ml-2">Share your contact Number in your Profie?</label>
                 </div>
                 <div className="felx flex-col justify-start gap-4">
                 <input type="checkbox"
-                    name="avaiability"
-                    onChange={handleChange} />
+                    name="availability"
+                />
                 <label className="ml-2">Set Your Avaiability.</label>
                 </div>
                 <button className="w-1/2 h-12 flex items-center justify-center p-2 bg-[#006EB9] text-white rounded" type="submit">Register Now</button>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_BASE_URL } from '../config.js';
 
 const RequestForm = () => {
 
@@ -14,21 +15,46 @@ const RequestForm = () => {
         setRequestData({ ...requestData, [name]: value });
     };
 
-    const handleSubmit = (e, data) => {
+    const handleSubmit = async (e, data) => {
         e.preventDefault();
-        console.log(data);
-    }
+        console.log(data)
+        const requestData = {
+            patientname: data.patientName,
+            location: data.location,
+            bloodgroup: data.bloodGroup,
+            phone: data.contactNo,
+        };
+    
+        try {
+            const response = await fetch(`${API_BASE_URL}/requests`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+    
+            if (response.ok) {
+                const newRequest = await response.json();
+                console.log('New user created:', newRequest);
+            } else {
+                console.error('Failed to add request:', response.status);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <>
             <p className="text-3xl font-bold items-center"> Post Request </p>
             <form className=" w-full flex flex-col my-3 gap-2 items-start justify-center" onSubmit={(e) => handleSubmit(e, requestData)}>
-            <label className="font-medium text-lg ">Username</label>
+            <label className="font-medium text-lg ">Patient name</label>
                 <input
                     type="string"
                     className="border-[1px] border-[rgba(177,181,195,1)]  focus:outline h-[52px] px-3 rounded-md w-[80%]"
                     placeholder="Enter your Name"
-                    name="userName"
+                    name="patientName"
                     onChange={handleChange}>
             </input>
             <label className="font-medium text-lg text -left" >Location</label>
